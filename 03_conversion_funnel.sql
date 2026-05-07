@@ -1,4 +1,4 @@
--- Query 04: Conversion Rate by Traffic Source
+-- Query 05: Conversion Rate by Traffic Source
 SELECT trafficSource.source
   , COUNT(totals.visits) AS visits
   , SUM(totals.transactions) AS transactions
@@ -8,7 +8,7 @@ GROUP BY trafficSource.source
 HAVING transactions >= 50
 ORDER BY conversion_rate DESC;
 
--- Query 09: Conversion Funnel Analysis
+-- Query 06: Conversion Funnel Analysis
 with
 product_view as(
   SELECT
