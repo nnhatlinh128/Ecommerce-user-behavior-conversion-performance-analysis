@@ -1,47 +1,214 @@
-# User Behavior Analysis
+# 📊 E-commerce User Behavior & Conversion Performance Analysis | SQL
 
-## Project Overview
+**Author:** Nguyễn Nhật Linh
 
-This project analyzes the Google Analytics public dataset in BigQuery to explore user behavior, traffic quality, conversion performance, and revenue contribution in an e-commerce environment using SQL.
+**Date:** 2025-12-15
 
-The analysis focuses on transforming raw session-level data into business insights through traffic analysis, revenue analysis, conversion funnel analysis, and user behavior exploration.
-
----
-
-## Dataset
-
-- Source: Google Analytics Sample Dataset
-- Platform: BigQuery Public Dataset
-- Table used: `ga_sessions_2017*`
-
-The dataset contains:
-- User sessions
-- Traffic acquisition sources
-- Product interactions
-- Transactions
-- Device information
+**Tools Used:** SQL, Google BigQuery
 
 ---
 
-## Objectives
+## 📑 Table of Contents
 
-- Analyze traffic and engagement performance
-- Identify revenue-driving traffic sources
-- Evaluate conversion funnel performance
-- Compare purchaser and non-purchaser behavior
-- Analyze revenue contribution across devices
+1. [📌 Background & Overview](#-background--overview)
+2. [📂 Dataset Description & Data Structure](#-dataset-description--data-structure)
+3. [⚒️ Main Process](#️-main-process)
+4. [🔎 Final Conclusion & Recommendations](#-final-conclusion--recommendations)
 
 ---
 
-## Project Walkthrough
-### 1. Traffic & Engagement Analysis
+# 📌 Background & Overview
 
-#### Business Question
-Which traffic sources bring the most engaged users?
+## Objective
 
-#### SQL Query
+### 📖 What is this project about? What Business Question will it solve?
+
+This project analyzes the **Google Analytics Sample Dataset** to understand customer behavior throughout an e-commerce website journey, from website visits to completed purchases.
+
+The objective is to transform raw website interaction data into actionable business insights that support marketing optimization, conversion improvement, and revenue growth.
+
+Specifically, this project aims to answer the following business questions:
+
+✔️ How does website traffic perform over time?
+
+✔️ Which traffic sources attract the most engaged visitors?
+
+✔️ Which acquisition channels contribute the most revenue?
+
+✔️ How does revenue change over time?
+
+✔️ Which traffic sources generate the highest conversion rates?
+
+✔️ Where do users drop off throughout the purchase journey?
+
+✔️ How do purchasers behave differently from non-purchasers?
+
+✔️ How frequently do purchasing users complete transactions?
+
+✔️ Which devices generate the highest revenue?
+
+✔️ Which products are frequently purchased together and present cross-selling opportunities?
+
+By answering these questions, the project provides data-driven insights that can support business decisions in marketing, product optimization, and e-commerce operations.
+
+---
+
+### 👤 Who is this project for?
+
+This project can support decision-making for:
+
+✔️ Data Analysts
+
+✔️ Business Analysts
+
+✔️ Marketing Analysts
+
+✔️ Product Analysts
+
+✔️ E-commerce Managers
+
+✔️ Business Decision Makers
+
+---
+
+# 📂 Dataset Description & Data Structure
+
+## 📌 Data Source
+
+* **Source:** Google Analytics Sample Dataset
+* **Platform:** Google BigQuery Public Dataset
+* **Table Used:** `ga_sessions_2017*`
+* **Format:** BigQuery Tables
+* **Data Type:** Website Analytics & E-commerce Transaction Data
+
+---
+
+## 📊 Data Structure 
+
+### 1️⃣ Tables Used
+
+The project uses a single session-level table:
+
+| Table                 | Description                                                                                                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ga_sessions_2017*** | Contains website sessions, user interactions, traffic sources, product information, transaction records, and device information collected from the Google Merchandise Store. |
+
+---
+
+### 2️⃣ Key Fields Used in This Project
+
+| Column Name                      | Data Type | Description                                                         |
+| -------------------------------- | --------- | ------------------------------------------------------------------- |
+| fullVisitorId                    | STRING    | Unique visitor identifier                                           |
+| date                             | STRING    | Session date (YYYYMMDD)                                             |
+| totals.visits                    | INTEGER   | Number of website sessions                                          |
+| totals.pageviews                 | INTEGER   | Number of pages viewed                                              |
+| totals.bounces                   | INTEGER   | Indicates whether a session bounced                                 |
+| totals.transactions              | INTEGER   | Number of completed transactions                                    |
+| trafficSource.source             | STRING    | Traffic acquisition source                                          |
+| device.deviceCategory            | STRING    | Device category (Desktop, Mobile, Tablet)                           |
+| hits.eCommerceAction.action_type | STRING    | User's ecommerce action (Product View, Add-to-Cart, Purchase, etc.) |
+| hits.product.productSKU          | STRING    | Product SKU                                                         |
+| hits.product.v2ProductName       | STRING    | Product name                                                        |
+| hits.product.productQuantity     | INTEGER   | Quantity purchased                                                  |
+| hits.product.productRevenue      | INTEGER   | Revenue generated by the product                                    |
+
+---
+
+### Dataset Characteristics
+
+The Google Analytics dataset contains **nested and repeated fields**, requiring additional processing before analysis.
+
+Key SQL techniques applied throughout this project include:
+
+✔️ Common Table Expressions (CTEs)
+
+✔️ UNNEST() for nested data extraction
+
+✔️ Aggregation Functions
+
+✔️ Window Functions
+
+✔️ Date Functions
+
+✔️ JOIN Operations
+
+✔️ Conversion Funnel Analysis
+
+✔️ Product Cross-Sell Analysis
+
+---
+
+# ⚒️ Main Process
+
+## 1️⃣ Data Cleaning & Preprocessing
+
+Before conducting the analysis, the raw dataset was prepared to ensure accurate and meaningful results.
+
+The preprocessing process included:
+
+* Extracting nested product-level and interaction-level information using **UNNEST()**
+* Converting string-formatted dates into SQL DATE format using **PARSE_DATE()**
+* Filtering records with valid transactions and product revenue
+* Aggregating session-level metrics into business KPIs
+* Creating reusable Common Table Expressions (CTEs) to improve query readability and maintainability
+
+No additional missing value imputation or duplicate removal was required, as the Google Analytics Sample Dataset had already been preprocessed by Google.
+
+---
+
+## 2️⃣ SQL Analysis
+
+## Task 1: Analyze Monthly Website Traffic Performance
+
+### Purpose
+
+Website traffic is one of the fundamental indicators of an e-commerce business's performance. Monitoring monthly trends in visits, pageviews, and transactions helps evaluate overall website activity and identify whether user engagement and purchasing behavior are improving over time.
+
+This analysis provides a high-level overview of website performance during the first quarter of 2017 and serves as the foundation for the subsequent analyses on traffic quality, conversion, and revenue.
+
+### SQL Query
 
 ```sql
+-- Query 01: Monthly Traffic Overview
+-- Jan to Mar 2017
+SELECT
+  format_date("%Y%m", parse_date("%Y%m%d", date)) as month,
+  SUM(totals.visits) AS visits,
+  SUM(totals.pageviews) AS pageviews,
+  SUM(totals.transactions) AS transactions,
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`
+WHERE _TABLE_SUFFIX BETWEEN '0101' AND '0331'
+GROUP BY 1
+ORDER BY 1;
+```
+
+### Project Result
+
+<img width="643" height="115" alt="Screenshot 2026-06-25 at 14 31 33" src="https://github.com/user-attachments/assets/9340ba80-98bf-428a-8baf-beaf08deeedc" />
+
+### Observation
+
+* Website traffic remained relatively stable during the first quarter of 2017, with monthly visits ranging from approximately **62K to 70K sessions**.
+* February experienced a slight decline in both visits and pageviews compared to January.
+* In March, website activity recovered, reaching the highest number of visits (**69,931**) and pageviews (**259,522**) during the observed period.
+* Transactions increased from **713** in January to **993** in March, representing the strongest purchasing performance among the three months despite only a moderate increase in traffic.
+
+---
+
+# Task 2: Evaluate Traffic Quality Using Bounce Rate
+
+### Purpose
+
+Traffic volume alone does not indicate whether an acquisition channel is effective. A channel may attract a large number of visitors, but if users leave after viewing only one page, the traffic quality is likely to be low.
+
+Bounce rate measures the percentage of sessions where users leave the website without any further interaction. Comparing bounce rates across traffic sources helps evaluate visitor engagement and identify channels that may require optimization.
+
+### SQL Query
+
+```sql
+-- Query 02: Bounce Rate by Traffic Source
+-- Traffic quality analysis
 SELECT trafficSource.source
   , COUNT(totals.visits) AS total_visits
   , COUNT(totals.bounces) AS total_no_of_bounces
@@ -51,22 +218,32 @@ WHERE _table_suffix BETWEEN '0701'AND '0731'
 GROUP BY trafficSource.source
 ORDER BY total_visits DESC;
 ```
-#### Result
 
-<img width="679" height="459" alt="Screenshot 2026-05-07 at 17 30 53" src="https://github.com/user-attachments/assets/c4366ab0-9cf6-41a8-b0b5-dbd5c81455d3" />
+### Project Result
 
-#### Key Insight
+<img width="635" height="429" alt="Screenshot 2026-06-25 at 14 33 07" src="https://github.com/user-attachments/assets/8c2c6fd1-744c-4f17-b765-b756fde4d402" />
 
-Google drives the highest traffic volume, while YouTube shows a significantly higher bounce rate, indicating lower engagement quality.
+### Observation
 
-### 2. Revenue Analysis
+* **Google** generated the highest traffic volume with **38,400 visits**, while recording a bounce rate of **51.56%**.
+* **Direct traffic** attracted **19,891 visits** and achieved a lower bounce rate (**43.27%**) than Google, indicating relatively stronger user engagement.
+* **YouTube** recorded the highest bounce rate (**66.73%**) among the major traffic sources, suggesting that visitors from this channel were less likely to continue browsing the website.
+* Among traffic sources with a reasonable number of visits, **reddit.com** showed the lowest bounce rate (**28.57%**), although the sample size was relatively small.
 
-#### Business Question
-Which traffic sources contribute the most revenue?
+---
 
-#### SQL Query
+# Task 3: Analyze Revenue Contribution by Traffic Source
+
+### Purpose
+
+Not all acquisition channels contribute equally to business revenue. While some traffic sources generate a large number of visitors, others attract users with stronger purchasing intent.
+
+This analysis evaluates revenue generated by each traffic source at both monthly and weekly levels to identify high-performing acquisition channels.
+
+### SQL Query
 
 ```sql
+-- Query 03: Revenue by Traffic Source (Week & Month)
 WITH base AS (
   SELECT
     PARSE_DATE('%Y%m%d', date) AS dt
@@ -97,68 +274,112 @@ SELECT
 FROM base
 GROUP BY time, source
 
-ORDER BY source, time_type, time; 
+ORDER BY source, time_type, time;
 ```
 
-#### Result
+### Project Result
 
-<img width="786" height="486" alt="Screenshot 2026-05-07 at 17 32 52" src="https://github.com/user-attachments/assets/19bfd9bc-1bef-4afd-b1df-3188ac3e0ba1" />
+<img width="789" height="430" alt="Screenshot 2026-06-25 at 14 34 56" src="https://github.com/user-attachments/assets/00f96876-584e-4a67-8a92-6a26fa8ae579" />
 
-#### Key Insight
+### Observation
 
-Direct traffic contributes the highest revenue in June 2017, while revenue fluctuates noticeably across different weeks.
+* **Direct traffic** generated the highest revenue in **June 2017**, reaching approximately **97.3K**, making it the strongest revenue-driving acquisition channel.
+* Weekly revenue from Direct traffic fluctuated during the month, peaking in **Week 24** before declining in subsequent weeks.
+* Other traffic sources such as **dfa** generated noticeably lower revenue, while channels including **bing**, **chat.google.com**, and **dealspotr.com** contributed only marginal sales.
+* Revenue generation was concentrated among a small number of acquisition channels rather than being evenly distributed.
 
-### 3. Device Revenue Analysis
+---
 
-#### Business Question
-How does revenue contribution vary across devices?
+# Task 4: Monitor Weekly Revenue Growth Using Cumulative Revenue
 
-#### SQL Query
+### Purpose
+
+Revenue trends help businesses monitor sales performance over time. While weekly revenue reflects short-term business performance, cumulative revenue provides a broader perspective by illustrating how revenue accumulates throughout the reporting period.
+
+This analysis evaluates weekly revenue growth between May and July 2017.
+
+### SQL Query
 
 ```sql
-with 
-raw_data as (
+-- Query 04: Weekly & Cumulative Revenue Trend
+WITH weekly_revenue AS (
   SELECT
-    device.deviceCategory AS device
-    ,SUM(productRevenue)/1000000 AS revenue_by_device
-    ,(SELECT SUM(productRevenue)/1000000 AS total_revenue
-      from `bigquery-public-data.google_analytics_sample.ga_sessions_*`
-            ,unnest(hits) hits
-          ,unnest(product) product
-      where totals.transactions>=1
-        and product.productRevenue is not null) as total_revenue
-  from  `bigquery-public-data.google_analytics_sample.ga_sessions_*`
-        ,unnest(hits) hits
-      ,unnest(product) product
-  where totals.transactions>=1
-    and product.productRevenue is not null
-  GROUP BY device
-  ORDER BY revenue_by_device DESC)
+    FORMAT_DATE('%G-%V', PARSE_DATE('%Y%m%d', date)) AS week
+    , product.productRevenue / 1000000 AS revenue
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`, 
+  UNNEST(hits) AS hits,
+  UNNEST(hits.product) AS product
+  WHERE product.productRevenue IS NOT NULL
+    AND PARSE_DATE('%Y%m%d', date) BETWEEN DATE '2017-05-01' AND DATE '2017-07-31'
+)
 
-select
-  device
-  ,revenue_by_device
-  ,total_revenue
-  ,round(100.00*(revenue_by_device/total_revenue),2) as ratio
-from raw_data;
+SELECT
+  week
+  , ROUND(SUM(revenue), 2) AS weekly_revenue
+  , ROUND(SUM(SUM(revenue)) OVER (ORDER BY week ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) AS cumulative_revenue
+FROM weekly_revenue
+GROUP BY week
+ORDER BY week;
 ```
 
-#### Result
+### Project Result
 
-<img width="636" height="109" alt="Screenshot 2026-05-07 at 17 33 54" src="https://github.com/user-attachments/assets/473d6c67-dd4d-4596-bcf0-e1fc0e392300" />
+<img width="518" height="401" alt="Screenshot 2026-06-25 at 14 37 05" src="https://github.com/user-attachments/assets/f6a1fdd5-f2f8-4d52-bddf-b1e1a865a17c" />
 
-#### Key Insight
+### Observation
 
-Desktop contributes more than 96% of total revenue, while mobile revenue remains relatively low.
+* Weekly revenue fluctuated throughout the analysis period, ranging from approximately **11.8K** to **57.1K**.
+* Revenue reached its highest level during **Week 29**, while **Week 31** recorded the lowest weekly revenue.
+* Cumulative revenue increased steadily over time, reaching approximately **425K** by the end of the reporting period.
+* Despite fluctuations in weekly sales, cumulative revenue continued to grow consistently.
 
-### 4. Conversion Funnel Analysis 
+---
 
-#### Business Question
-Where do users drop off in the purchase journey?
+# Task 5: Compare Conversion Rates Across Traffic Sources
 
-#### SQL Query
+### Purpose
+
+Website traffic alone does not determine marketing effectiveness. Conversion rate measures how successfully visitors complete a purchase and is therefore one of the most important performance indicators for evaluating acquisition channels.
+
+This analysis compares conversion rates across traffic sources to identify which channels attract users with stronger purchasing intent.
+
+### SQL Query
 
 ```sql
+-- Query 05: Conversion Rate by Traffic Source
+SELECT trafficSource.source
+  , COUNT(totals.visits) AS visits
+  , SUM(totals.transactions) AS transactions
+  , ROUND(SUM(totals.transactions)/ COUNT(totals.visits) * 100) AS conversion_rate
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`
+GROUP BY trafficSource.source
+HAVING transactions >= 50
+ORDER BY conversion_rate DESC;
+```
+
+### Project Result
+
+<img width="635" height="107" alt="Screenshot 2026-06-25 at 14 38 20" src="https://github.com/user-attachments/assets/03f9bf25-f060-477d-9653-f6f07b99bf9f" />
+
+### Observation
+
+* **dfa** recorded the highest conversion rate (**3%**) among traffic sources with at least **50 transactions**.
+* **Direct traffic** generated the largest number of transactions (**4,697**) while maintaining a strong conversion rate (**2%**).
+* **Google** attracted the highest number of visitors but converted at only **1%**, indicating that large traffic volume did not necessarily result in higher purchasing efficiency.
+* Restricting the analysis to traffic sources with at least **50 transactions** improved the reliability of comparisons by excluding channels with very small sample sizes.
+
+# Task 6: Analyze the Conversion Funnel
+
+### Purpose
+
+A conversion funnel illustrates how users progress through different stages of the purchasing journey, from viewing a product to completing a purchase. By measuring the conversion rate at each stage, businesses can identify where users are most likely to leave the buying process.
+
+This analysis evaluates the monthly performance of the conversion funnel during the first quarter of 2017, helping uncover opportunities to improve the online shopping experience and increase conversion rates.
+
+### SQL Query
+
+```sql
+-- Query 06: Conversion Funnel Analysis
 with
 product_view as(
   SELECT
@@ -209,11 +430,266 @@ left join purchase p on pv.month = p.month
 order by pv.month;
 ```
 
-#### Result
+### Project Result
 
-<img width="882" height="109" alt="Screenshot 2026-05-07 at 17 34 33" src="https://github.com/user-attachments/assets/4409f79b-1b3c-43ee-8a86-2c339701d8d9" />
+<img width="883" height="109" alt="Screenshot 2026-06-25 at 14 40 10" src="https://github.com/user-attachments/assets/e570c6ef-f06d-48be-be90-3ae8e3aa36a8" />
 
+### Observation
 
-#### Key Insight
+* Product views remained relatively stable throughout the first quarter, ranging from approximately **21K to 26K** per month.
+* The **Add-to-Cart Rate** improved steadily from **28.47%** in January to **37.29%** in March.
+* The **Purchase Rate** also increased from **8.31%** to **12.64%**, indicating stronger conversion performance over time.
+* Despite these improvements, only a relatively small proportion of product views ultimately resulted in completed purchases.
 
-A significant drop occurs between product views and add-to-cart actions, indicating friction in the conversion funnel.
+---
+
+# Task 7: Compare Browsing Behavior Between Purchasers and Non-Purchasers
+
+### Purpose
+
+Understanding how purchasing users interact with the website compared to non-purchasing users helps identify behavioral differences that may influence conversion.
+
+This analysis compares the average number of pageviews between purchasers and non-purchasers to explore browsing patterns before purchase decisions.
+
+### SQL Query
+
+```sql
+-- Query 07: Purchaser vs Non-Purchaser Pageview Analysis
+with 
+purchaser_data as(
+  select
+      format_date("%Y%m",parse_date("%Y%m%d",date)) as month,
+      (sum(totals.pageviews)/count(distinct fullvisitorid)) as avg_pageviews_purchase,
+  from `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`
+    ,unnest(hits) hits
+    ,unnest(product) product
+  where _table_suffix between '0601' and '0731'
+  and totals.transactions>=1
+  and product.productRevenue is not null
+  group by month
+),
+
+non_purchaser_data as(
+  select
+      format_date("%Y%m",parse_date("%Y%m%d",date)) as month,
+      sum(totals.pageviews)/count(distinct fullvisitorid) as avg_pageviews_non_purchase,
+  from `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`
+      ,unnest(hits) hits
+    ,unnest(product) product
+  where _table_suffix between '0601' and '0731'
+  and totals.transactions is null
+  and product.productRevenue is null
+  group by month
+)
+
+select
+    pd.*,
+    avg_pageviews_non_purchase
+from purchaser_data pd
+full join non_purchaser_data using(month)
+order by pd.month;
+```
+
+### Project Result
+
+<img width="615" height="79" alt="Screenshot 2026-06-25 at 14 42 02" src="https://github.com/user-attachments/assets/9d2bdbfd-6689-4bba-8d18-76fdeee0bf3a" />
+
+### Observation
+
+* During both June and July 2017, non-purchasing users recorded a higher average number of pageviews than purchasing users.
+* Average pageviews increased slightly for both user groups from June to July.
+* Purchasing users averaged approximately **94–124 pageviews**, while non-purchasing users averaged **317–334 pageviews**.
+
+---
+
+# Task 8: Analyze the Average Number of Transactions per Purchasing User
+
+### Purpose
+
+Beyond measuring whether users complete a purchase, it is also important to understand how frequently converted users make transactions. This metric provides insights into purchasing behavior and customer engagement.
+
+### SQL Query
+
+```sql
+-- Query 08: Average Transactions per Purchasing User
+select
+    format_date("%Y%m",parse_date("%Y%m%d",date)) as month,
+    sum(totals.transactions)/count(distinct fullvisitorid) as Avg_total_transactions_per_user
+from `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
+    ,unnest (hits) hits,
+    unnest(product) product
+where  totals.transactions>=1
+and product.productRevenue is not null
+group by month;
+```
+
+### Project Result
+
+<img width="465" height="53" alt="Screenshot 2026-06-25 at 14 44 54" src="https://github.com/user-attachments/assets/6f25032c-d97c-4e61-ac47-6ea261f3d9af" />
+
+### Observation
+
+* During July 2017, purchasing users completed an average of approximately **4.16 transactions** per user.
+* The result indicates that converted users tended to complete multiple transactions rather than making only a single purchase.
+
+---
+
+# Task 9: Analyze Revenue Contribution Across Device Categories
+
+### Purpose
+
+Customers access e-commerce websites through multiple devices. Understanding how each device contributes to revenue helps evaluate purchasing behavior across platforms and identify potential opportunities to improve user experience.
+
+### SQL Query
+
+```sql
+-- Query 09: Revenue Contribution by Device
+with 
+raw_data as (
+  SELECT
+    device.deviceCategory AS device
+    ,SUM(productRevenue)/1000000 AS revenue_by_device
+    ,(SELECT SUM(productRevenue)/1000000 AS total_revenue
+      from `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+            ,unnest(hits) hits
+          ,unnest(product) product
+      where totals.transactions>=1
+        and product.productRevenue is not null) as total_revenue
+  from  `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+        ,unnest(hits) hits
+      ,unnest(product) product
+  where totals.transactions>=1
+    and product.productRevenue is not null
+  GROUP BY device
+  ORDER BY revenue_by_device DESC)
+
+select
+  device
+  ,revenue_by_device
+  ,total_revenue
+  ,round(100.00*(revenue_by_device/total_revenue),2) as ratio
+from raw_data;
+```
+
+### Project Result
+
+<img width="634" height="107" alt="Screenshot 2026-06-25 at 14 45 58" src="https://github.com/user-attachments/assets/29eb7c36-daf2-4c08-b64f-bc2bbac5c7de" />
+
+### Observation
+
+* **Desktop** generated approximately **96.14%** of total revenue.
+* **Mobile** contributed approximately **3.25%** of total revenue.
+* **Tablet** accounted for only **0.62%** of total revenue.
+* Revenue generation was heavily concentrated on desktop devices.
+
+---
+
+# Task 10: Identify Cross-Sell Opportunities Through Product Co-Purchase Analysis
+
+### Purpose
+
+Cross-selling is a common strategy in e-commerce to increase average order value by recommending complementary products that customers frequently purchase together.
+
+This analysis identifies products commonly purchased by customers who bought **"YouTube Men's Vintage Henley"**, providing insights into potential product bundling and recommendation opportunities.
+
+### SQL Query
+
+```sql
+-- Query 10: Cross-Sell Product Analysis
+with 
+buyer_list as(
+    SELECT
+        distinct fullVisitorId  
+    FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
+    , UNNEST(hits) AS hits
+    , UNNEST(hits.product) as product
+    WHERE product.v2ProductName = "YouTube Men's Vintage Henley"
+    AND totals.transactions>=1
+    AND product.productRevenue is not null
+)
+
+SELECT
+  product.v2ProductName AS other_purchased_products,
+  SUM(product.productQuantity) AS quantity
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201707*`
+, UNNEST(hits) AS hits
+, UNNEST(hits.product) as product
+JOIN buyer_list using(fullVisitorId)
+WHERE product.v2ProductName != "YouTube Men's Vintage Henley"
+ and product.productRevenue is not null
+ AND totals.transactions>=1
+GROUP BY other_purchased_products
+ORDER BY quantity DESC;
+```
+
+### Project Result
+
+<img width="487" height="427" alt="Screenshot 2026-06-25 at 14 47 29" src="https://github.com/user-attachments/assets/fd1fc5ad-9ca2-46f5-ab6e-68e6e6ad1e79" />
+
+### Observation
+
+* Customers who purchased **YouTube Men's Vintage Henley** most frequently also purchased **Google Sunglasses**, with a total quantity of **20**.
+* Other commonly co-purchased products included **Google Women's Vintage Hero Tee Black**, **SPF-15 Slim & Slender Lip Balm**, and **Google Women's Short Sleeve Hero Tee Red Heather**.
+* The identified co-purchase patterns span multiple product categories, including apparel, accessories, and personal care products.
+
+# 🔎 Final Conclusion & Recommendations
+
+## 📈 Key Findings
+
+### 1. Website Traffic Remained Stable While Purchasing Performance Improved
+
+Website traffic remained relatively stable during the first quarter of 2017. However, completed transactions increased steadily from January to March, suggesting that purchasing performance improved even without substantial traffic growth.
+
+---
+
+### 2. Traffic Volume Did Not Necessarily Translate into Business Value
+
+Although **Google** generated the highest number of website visits, **Direct traffic** consistently delivered stronger revenue and conversion performance. This indicates that evaluating acquisition channels based solely on traffic volume may lead to misleading conclusions.
+
+---
+
+### 3. Conversion Performance Improved but the Funnel Still Has Optimization Opportunities
+
+Both **Add-to-Cart Rate** and **Purchase Rate** increased throughout the first quarter of 2017. Nevertheless, only a relatively small proportion of product views ultimately resulted in completed purchases, suggesting opportunities to further optimize the purchasing journey.
+
+---
+
+### 4. Desktop Was the Dominant Revenue-Generating Device
+
+Desktop users contributed more than **96%** of total revenue, while Mobile and Tablet devices generated only a small share of sales. This indicates that purchasing behavior differed considerably across device categories.
+
+---
+
+### 5. Customer Behavior and Product Relationships Reveal Business Opportunities
+
+The analysis showed that browsing intensity alone did not necessarily lead to purchases. In addition, several products were frequently purchased together, highlighting opportunities for product recommendations and cross-selling strategies.
+
+---
+
+## 💡 Business Recommendations
+
+### 📢 Marketing Team
+
+* Prioritize investment in acquisition channels with stronger **conversion performance** and **revenue contribution**, rather than focusing solely on generating website traffic.
+* Continuously monitor **bounce rate** and **conversion rate** across traffic sources to identify underperforming campaigns and optimize marketing effectiveness.
+
+---
+
+### 🛒 Product Team
+
+* Improve the product browsing experience and checkout process to reduce customer drop-off throughout the conversion funnel.
+* Implement **cross-selling** and **product recommendation** strategies based on frequently co-purchased products to increase Average Order Value (AOV).
+
+---
+
+### 💻 E-commerce Team
+
+* Investigate user behavior across different device categories, particularly **Mobile**, to better understand factors contributing to lower revenue performance.
+* Regularly monitor conversion funnel metrics to identify bottlenecks and continuously improve the customer journey.
+
+---
+
+### 📊 Business Team
+
+* Evaluate business performance using a combination of **traffic**, **conversion**, and **revenue** metrics rather than relying on a single KPI.
+* Establish periodic monitoring of revenue and conversion trends to support timely, data-driven business decisions.
