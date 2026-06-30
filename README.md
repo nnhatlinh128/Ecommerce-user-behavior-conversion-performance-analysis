@@ -37,19 +37,13 @@ This project uses SQL and Google BigQuery to analyze user behavior and conversio
 
 ### 👤 Who is this project for?
 
-This project can support decision-making for:
+This project is designed for stakeholders who rely on data to improve business performance, including:
 
-✔️ Data Analysts
+✔️ **Marketing Analysts** – to evaluate acquisition channel performance and customer engagement.
 
-✔️ Business Analysts
+✔️ **Product Analysts** – to analyze user behavior, conversion funnels, and product purchasing patterns.
 
-✔️ Marketing Analysts
-
-✔️ Product Analysts
-
-✔️ E-commerce Managers
-
-✔️ Business Decision Makers
+✔️ **E-commerce Managers** – to monitor revenue performance and identify opportunities to improve customer conversion and sales.
 
 ---
 
